@@ -1,0 +1,1 @@
+F:\projects\leatmode\buildSrc\build\classes\kotlin\main\Dependencies.class;F:\projects\leatmode\buildSrc\build\classes\kotlin\main\Versions.class

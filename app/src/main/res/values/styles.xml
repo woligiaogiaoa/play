@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+
+    <style name="Widget.Play.AppBar" parent="@style/Widget.Design.AppBarLayout">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:elevation" tools:targetApi="lollipop">8dp</item>
+    </style>
+
+</resources>
