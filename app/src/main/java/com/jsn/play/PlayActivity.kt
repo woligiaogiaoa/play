@@ -5,9 +5,7 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.AbsListView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
@@ -16,17 +14,17 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.jsn.play.util.doOnApplyWindowInsets
 import com.jsn.play.util.shouldCloseDrawerFromBackPress
-import com.jsn.play.util.showToast
 import com.jsn.play.util.updatePaddingRelative
 import kotlinx.android.synthetic.main.activity_play.*
-import kotlinx.android.synthetic.main.fragment_play.*
+import kotlinx.coroutines.flow.collect
 
 
 val NAV_ID_NONE=-1
@@ -114,6 +112,16 @@ class PlayActivity : AppCompatActivity(),NavigationHost {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
             fab.setImageDrawable(if(isNightTheme == Configuration.UI_MODE_NIGHT_YES) getDrawable(R.drawable.ic_wb_sunny_black_24dp) else getDrawable(R.drawable.ic_brightness_3_black_24dp))
+        }
+
+        lifecycleScope.launchWhenStarted {
+           viewModle.ScrollStateFlow.collect {
+               when(it){
+                   ScrollDirection.SCROLL_NON_DIR -> { }
+                   ScrollDirection.SCROLL_UP -> { }
+                   ScrollDirection.SCROLL_DOWN -> { }
+               }
+           }
         }
     }
 

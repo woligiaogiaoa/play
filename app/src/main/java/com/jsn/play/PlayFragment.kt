@@ -6,12 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.jsn.play.databinding.FragmentPlayBinding
 import com.jsn.play.util.doOnApplyWindowInsets
 import com.jsn.play.util.updatePaddingRelative
-import kotlinx.android.synthetic.main.fragment_play.*
-import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.fragment_test.rv
 
 class PlayFragment :MainNavigationFragment() {
@@ -42,6 +40,18 @@ class PlayFragment :MainNavigationFragment() {
         adapter.submitList(mutableListOf<String>().apply {
             repeat(100){
                 add("${it}")
+            }
+        })
+        rv.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                viewModle.scrollChannel.offer(
+                    if(dy>0) ScrollDirection.SCROLL_UP else if(dy==0) ScrollDirection.SCROLL_NON_DIR else ScrollDirection.SCROLL_DOWN
+                )
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
             }
         })
 
