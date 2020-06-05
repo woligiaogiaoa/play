@@ -1,11 +1,15 @@
 package com.jsn.play.unsplash
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -63,7 +67,31 @@ class UnsplashFragment: ScrollStateFragment(){
             )
             viewModel.position.value=scrollY
         }
+        webView.setDownloadListener{url, userAgent, contentDisposition, mimetype, contentLength ->
+            Intent(Intent.ACTION_VIEW).also {
+                it.data=Uri.parse(url)
+                startActivity(it)
+            }
+        }
+        webView.webViewClient=object :WebViewClient(){
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                return false
+            }
+        }
     }
 
 }
+
+/*mWebView.setDownloadListener(new DownloadListener() {
+    public void onDownloadStart(String url, String userAgent,
+                String contentDisposition, String mimetype,
+                long contentLength) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+});*/
 
