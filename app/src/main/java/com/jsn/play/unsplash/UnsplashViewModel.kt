@@ -1,6 +1,5 @@
-package com.jsn.play.test
+package com.jsn.play.unsplash
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.jsn.play.util.SingleLiveEvent
 

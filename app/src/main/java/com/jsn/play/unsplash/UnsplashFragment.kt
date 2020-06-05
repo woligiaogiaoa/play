@@ -1,4 +1,4 @@
-package com.jsn.play.test
+package com.jsn.play.unsplash
 
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.jsn.play.MainNavigationFragment
+import com.jsn.play.ScrollStateFragment
 import com.jsn.play.databinding.FragmentUnsplashBinding
 import com.jsn.play.home.MainActivity
 import com.jsn.play.home.ScrollDirection
@@ -18,15 +19,11 @@ import com.jsn.play.util.safeRequestLayout
 import kotlinx.android.synthetic.main.fragment_unsplash.*
 import java.lang.RuntimeException
 
-class UnsplashFragment: MainNavigationFragment(){
+class UnsplashFragment: ScrollStateFragment(){
 
     lateinit var binding:FragmentUnsplashBinding
 
     lateinit var webView: WebView
-
-    val activityViewModle by lazy {
-        (requireActivity() as? MainActivity )?.viewModle ?: throw RuntimeException("viewModle 哪去了")
-    }
 
     val viewModel by viewModels<UnsplashViewModel>()
 
@@ -44,13 +41,12 @@ class UnsplashFragment: MainNavigationFragment(){
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.doOnApplyWindowInsets{view, insets, viewPaddingState ->
-            binding.vStatusBar.run({
+            binding.vStatusBar.run{
                 layoutParams.height = insets.systemWindowInsetTop
                 isVisible = layoutParams.height > 0
                 safeRequestLayout()
-            })
+            }
         }
-
         buildWebview()
     }
 
@@ -62,7 +58,7 @@ class UnsplashFragment: MainNavigationFragment(){
         }
         webview.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             val dy=scrollY-oldScrollY
-            activityViewModle.scrollChannel.offer(
+            scrollStateObserver.receiveState(
                 if(dy>0) ScrollDirection.SCROLL_UP else if(dy==0) ScrollDirection.SCROLL_NON_DIR else ScrollDirection.SCROLL_DOWN
             )
             viewModel.position.value=scrollY

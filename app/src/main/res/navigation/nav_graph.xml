@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/unsplashFragment"
-        android:name="com.jsn.play.test.UnsplashFragment"
+        android:name="com.jsn.play.unsplash.UnsplashFragment"
         android:label="@string/unsplash" />
 
 </navigation>

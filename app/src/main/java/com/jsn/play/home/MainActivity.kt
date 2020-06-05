@@ -27,12 +27,15 @@ import com.jsn.play.util.doOnApplyWindowInsets
 import com.jsn.play.util.shouldCloseDrawerFromBackPress
 import com.jsn.play.util.updatePaddingRelative
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.collect
 
 
 val NAV_ID_NONE = -1
 
-class MainActivity : AppCompatActivity(), NavigationHost {
+
+
+class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
 
     val viewModle: MainViewModle by viewModels<MainViewModle>()
 
@@ -43,6 +46,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     private val TOP_LEVEL_DESTINATIONS = setOf(
         R.id.homeFragment,
         R.id.unsplashFragment
+        //todo: github ,wikipadia
     )
 
     @SuppressLint("NewApi")
@@ -138,7 +142,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     //if we have fragment that contains recyclerview for example,we can react to view's scrolling state
     fun animateByScrollingState() {
         lifecycleScope.launchWhenStarted {
-            viewModle.scrollChannel.offer(ScrollDirection.SCROLL_NON_DIR)
+            viewModle.scrollChannel.sendBlocking(ScrollDirection.SCROLL_NON_DIR)
             viewModle.ScrollStateFlow.collect {
                 var targetAlpha: Float = -1f
                 when (it) {
@@ -206,6 +210,10 @@ class MainActivity : AppCompatActivity(), NavigationHost {
 
     private fun closeDrawer() {
         drawer_layout.closeDrawer(GravityCompat.START)
+    }
+
+    override fun receiveState(state: ScrollDirection) {
+        viewModle.scrollChannel.offer(state)
     }
 }
 

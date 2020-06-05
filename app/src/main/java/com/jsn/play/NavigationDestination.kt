@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.jsn.play.home.ScrollDirection
+import java.lang.IllegalStateException
 
 interface NavigationDestination {
 
@@ -49,5 +51,33 @@ open class MainNavigationFragment : Fragment(),NavigationDestination {
 interface NavigationHost {
 
     /** Called by MainNavigationFragment to setup it's toolbar with the navigation controller. */
-    fun registerToolbarWithNavigation(toolbar: Toolbar)
+    fun registerToolbarWithNavigation(toolbar: Toolbar) }
+
+
+
+
+
+
+
+
+
+
+
+
+interface ScrollStateObserver {
+    fun receiveState(state: ScrollDirection)
 }
+
+
+open class ScrollStateFragment :MainNavigationFragment(){
+
+    lateinit var scrollStateObserver: ScrollStateObserver
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        scrollStateObserver=(requireActivity() as? ScrollStateObserver) ?: throw  IllegalStateException("activity must be implement ScrollStateObserver")
+    }
+}
+
+
