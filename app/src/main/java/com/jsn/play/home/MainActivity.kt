@@ -161,7 +161,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
                     interpolator = DecelerateInterpolator()
                     start()
                     awaitEnd()
-                    fab.isClickable = true
+                    fab.isClickable =( fab.alpha==1f)
                 }
             }
         }
