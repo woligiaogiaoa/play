@@ -4,12 +4,17 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.view.View
 import android.view.ViewParent
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import androidx.core.os.BuildCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
 
 @SuppressLint("NewApi") // Lint does not understand isAtLeastQ currently
 fun DrawerLayout.shouldCloseDrawerFromBackPress(): Boolean {
@@ -117,3 +122,18 @@ data class ViewPaddingState(
     val start: Int,
     val end: Int
 )
+
+suspend fun WebView.awaitLoading()= suspendCancellableCoroutine<Unit>{ cont ->
+    webChromeClient=object : WebChromeClient(){
+        val lock= AtomicBoolean(true)
+        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+            super.onProgressChanged(view, newProgress)
+            if(newProgress>=100){
+                if(lock.compareAndSet(true,false)){
+                    cont.resume(Unit)
+                    webChromeClient=null
+                }
+            }
+        }
+    }
+}

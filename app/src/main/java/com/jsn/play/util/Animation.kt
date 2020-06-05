@@ -35,5 +35,6 @@ suspend fun Animator.awaitEnd() = suspendCancellableCoroutine<Unit> { cont ->
                 }
             }
         }
+
     })
 }

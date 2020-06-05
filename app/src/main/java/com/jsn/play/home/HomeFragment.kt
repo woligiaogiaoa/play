@@ -1,18 +1,21 @@
-package com.jsn.play
+package com.jsn.play.home
 
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.jsn.play.databinding.FragmentPlayBinding
+import com.jsn.play.MainNavigationFragment
+import com.jsn.play.SimpleStirngAdapter
+import com.jsn.play.databinding.FragmentHomeBinding
 import com.jsn.play.util.doOnApplyWindowInsets
 import com.jsn.play.util.updatePaddingRelative
-import kotlinx.android.synthetic.main.fragment_test.rv
+import kotlinx.android.synthetic.main.fragment_home.*
 
-class PlayFragment :MainNavigationFragment() {
+class HomeFragment : MainNavigationFragment() {
 
     lateinit var adapter: SimpleStirngAdapter
 
@@ -23,9 +26,9 @@ class PlayFragment :MainNavigationFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModle= (requireActivity() as PlayActivity ).viewModle
-        val inflate = FragmentPlayBinding.inflate(inflater, container, false)
-        inflate.rv.adapter=SimpleStirngAdapter().also { adapter=it }
+        viewModle= (requireActivity() as MainActivity).viewModle
+        val inflate = FragmentHomeBinding.inflate(inflater, container, false)
+        inflate.rv.adapter= SimpleStirngAdapter().also { adapter=it }
 
         return inflate.root
     }
@@ -56,12 +59,6 @@ class PlayFragment :MainNavigationFragment() {
         })
 
     }
-
-    override fun onStart() {
-        super.onStart()
-        //collapding_tool_bar.setStatusBarScrimColor(ContextCompat.getColor(requireContext(),R.color.status_bar_scrim))
-    }
-
 }
 
 

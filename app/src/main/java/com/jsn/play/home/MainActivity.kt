@@ -1,43 +1,48 @@
-package com.jsn.play
+package com.jsn.play.home
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.jsn.play.*
+import com.jsn.play.util.awaitEnd
 import com.jsn.play.util.doOnApplyWindowInsets
 import com.jsn.play.util.shouldCloseDrawerFromBackPress
 import com.jsn.play.util.updatePaddingRelative
-import kotlinx.android.synthetic.main.activity_play.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
 
 
-val NAV_ID_NONE=-1
-class PlayActivity : AppCompatActivity(),NavigationHost {
+val NAV_ID_NONE = -1
 
-    val   viewModle: MainViewModle by viewModels<MainViewModle>()
+class MainActivity : AppCompatActivity(), NavigationHost {
+
+    val viewModle: MainViewModle by viewModels<MainViewModle>()
 
     private lateinit var navController: NavController
 
     private var currentNavId = NAV_ID_NONE
 
     private val TOP_LEVEL_DESTINATIONS = setOf(
-        R.id.playFragment,R.id.testFragment
+        R.id.homeFragment,
+        R.id.unsplashFragment
     )
 
     @SuppressLint("NewApi")
@@ -45,14 +50,14 @@ class PlayActivity : AppCompatActivity(),NavigationHost {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_play)
+        setContentView(R.layout.activity_main)
 
-        content_container.systemUiVisibility=
+        content_container.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
-        content_container.setOnApplyWindowInsetsListener{v, insets -> insets }
+        content_container.setOnApplyWindowInsetsListener { v, insets -> insets }
 
         drawer_container.setOnApplyWindowInsetsListener { v, insets ->
             // Let the view draw it's navigation bar divider
@@ -72,7 +77,7 @@ class PlayActivity : AppCompatActivity(),NavigationHost {
             )
         }
 
-        status_bar_scrim.setOnApplyWindowInsetsListener{v, insets ->
+        status_bar_scrim.setOnApplyWindowInsetsListener { v, insets ->
             val topInset = insets.systemWindowInsetTop
             if (v.layoutParams.height != topInset) {
                 v.layoutParams.height = topInset
@@ -95,13 +100,17 @@ class PlayActivity : AppCompatActivity(),NavigationHost {
 
         nav_view.setupWithNavController(navController)
 
-        fab_container.doOnApplyWindowInsets{_,insets,padding ->
-            fab_container.updatePaddingRelative(bottom = padding.bottom+insets.systemWindowInsetBottom)
+        fab_container.doOnApplyWindowInsets { _, insets, padding ->
+            fab_container.updatePaddingRelative(bottom = padding.bottom + insets.systemWindowInsetBottom)
         }
 
         val isNight = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-        fab.setImageDrawable(if(isNight == Configuration.UI_MODE_NIGHT_YES) getDrawable(R.drawable.ic_wb_sunny_black_24dp) else getDrawable(R.drawable.ic_brightness_3_black_24dp))
+        fab.setImageDrawable(
+            if (isNight == Configuration.UI_MODE_NIGHT_YES) getDrawable(
+                R.drawable.ic_wb_sunny_black_24dp
+            ) else getDrawable(R.drawable.ic_brightness_3_black_24dp)
+        )
 
         fab.setOnClickListener {
             val isNightTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -111,17 +120,50 @@ class PlayActivity : AppCompatActivity(),NavigationHost {
                 Configuration.UI_MODE_NIGHT_NO ->
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
-            fab.setImageDrawable(if(isNightTheme == Configuration.UI_MODE_NIGHT_YES) getDrawable(R.drawable.ic_wb_sunny_black_24dp) else getDrawable(R.drawable.ic_brightness_3_black_24dp))
+            fab.setImageDrawable(
+                if (isNightTheme == Configuration.UI_MODE_NIGHT_YES) getDrawable(
+                    R.drawable.ic_wb_sunny_black_24dp
+                ) else getDrawable(R.drawable.ic_brightness_3_black_24dp)
+            )
         }
 
+
+        animateByScrollingState()
+
+
+    }
+
+    lateinit var animator: Animator
+
+    //if we have fragment that contains recyclerview for example,we can react to view's scrolling state
+    fun animateByScrollingState() {
         lifecycleScope.launchWhenStarted {
-           viewModle.ScrollStateFlow.collect {
-               when(it){
-                   ScrollDirection.SCROLL_NON_DIR -> { }
-                   ScrollDirection.SCROLL_UP -> { }
-                   ScrollDirection.SCROLL_DOWN -> { }
-               }
-           }
+            viewModle.scrollChannel.offer(ScrollDirection.SCROLL_NON_DIR)
+            viewModle.ScrollStateFlow.collect {
+                var targetAlpha: Float = -1f
+                when (it) {
+                    ScrollDirection.SCROLL_NON_DIR -> {
+                    }
+                    ScrollDirection.SCROLL_UP -> {
+                        targetAlpha = 0f
+                    }
+                    ScrollDirection.SCROLL_DOWN -> {
+                        targetAlpha = 1f
+                    }
+                }
+                if (targetAlpha == -1f) return@collect
+                if (fab.alpha == targetAlpha) return@collect
+                animator = ObjectAnimator.ofFloat(fab, View.ALPHA, fab.alpha, targetAlpha)
+
+                animator.run {
+                    fab.isClickable = false
+                    duration = 500
+                    interpolator = DecelerateInterpolator()
+                    start()
+                    awaitEnd()
+                    fab.isClickable = true
+                }
+            }
         }
     }
 

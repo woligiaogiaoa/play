@@ -2,19 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/playFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/playFragment"
-        android:name="com.jsn.play.PlayFragment"
-        android:label="PlayFragment" >
+        android:id="@+id/homeFragment"
+        android:name="com.jsn.play.home.HomeFragment"
+        android:label="@string/home" >
         <action
-            android:id="@+id/action_playFragment_to_testFragment"
-            app:destination="@id/testFragment" />
+            android:id="@+id/action_homeFragment_to_unsplashFragment"
+            app:destination="@id/unsplashFragment" />
     </fragment>
     <fragment
-        android:id="@+id/testFragment"
-        android:name="com.jsn.play.TestFragment"
-        android:label="TestFragment" />
+        android:id="@+id/unsplashFragment"
+        android:name="com.jsn.play.test.UnsplashFragment"
+        android:label="@string/unsplash" />
 
 </navigation>
