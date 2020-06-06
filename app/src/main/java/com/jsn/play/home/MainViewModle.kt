@@ -20,13 +20,21 @@ class MainViewModle :ViewModel() {
 
     val scrollChannel=ConflatedBroadcastChannel<ScrollDirection>()
 
+    val animationChannel=ConflatedBroadcastChannel<AnimationState>()
+
     val ScrollStateFlow=scrollChannel
         .asFlow()
         .distinctUntilChanged()
 
+    val animationFlow=
+        animationChannel.asFlow()
+            .distinctUntilChanged()
+
+
 
     override fun onCleared() {
         scrollChannel.close()
+        animationChannel.close()
     }
 
 }

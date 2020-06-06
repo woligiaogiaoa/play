@@ -1,17 +1,23 @@
 package com.jsn.play.home
 
 import android.animation.Animator
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.updatePadding
@@ -22,10 +28,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.jsn.play.*
-import com.jsn.play.util.awaitEnd
-import com.jsn.play.util.doOnApplyWindowInsets
-import com.jsn.play.util.shouldCloseDrawerFromBackPress
-import com.jsn.play.util.updatePaddingRelative
+import com.jsn.play.data.PrefManager
+import com.jsn.play.util.*
+import com.skydoves.balloon.showAlignTop
+import com.skydoves.balloon.showBalloon
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.collect
@@ -43,6 +49,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
 
     private var currentNavId = NAV_ID_NONE
 
+
     private val TOP_LEVEL_DESTINATIONS = setOf(
         R.id.homeFragment,
         R.id.unsplashFragment
@@ -54,7 +61,12 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        Log.e("createeee","fuck")
         setContentView(R.layout.activity_main)
+
+        if(MApp.app.firstOpen){
+            showGuide()
+        }
 
         content_container.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -119,10 +131,13 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
         fab.setOnClickListener {
             val isNightTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             when (isNightTheme) {
-                Configuration.UI_MODE_NIGHT_YES ->
+                Configuration.UI_MODE_NIGHT_YES ->{
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                Configuration.UI_MODE_NIGHT_NO ->
+                    viewModle.animationChannel.offer(AnimationState.SunAnimation)}
+
+                Configuration.UI_MODE_NIGHT_NO ->{
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    viewModle.animationChannel.offer(AnimationState.MoonAnimation)}
             }
             fab.setImageDrawable(
                 if (isNightTheme == Configuration.UI_MODE_NIGHT_YES) getDrawable(
@@ -130,45 +145,57 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
                 ) else getDrawable(R.drawable.ic_brightness_3_black_24dp)
             )
         }
-
-
         animateByScrollingState()
-
-
+        animateSunMoon()
     }
 
-    lateinit var animator: Animator
+    private fun showGuide() {
+        val ballon= getBallon(this)
+        fab.showBalloon(ballon,0,-0)
+        ballon.dismissWithDelay(3000)
+    }
+
 
     //if we have fragment that contains recyclerview for example,we can react to view's scrolling state
     fun animateByScrollingState() {
         lifecycleScope.launchWhenStarted {
+            fab.rotation=30f
             viewModle.scrollChannel.sendBlocking(ScrollDirection.SCROLL_NON_DIR)
             viewModle.ScrollStateFlow.collect {
                 var targetAlpha: Float = -1f
+                var targetX: Float = 0f
                 when (it) {
                     ScrollDirection.SCROLL_NON_DIR -> {
                     }
                     ScrollDirection.SCROLL_UP -> {
+                        targetX=100f
                         targetAlpha = 0f
                     }
                     ScrollDirection.SCROLL_DOWN -> {
                         targetAlpha = 1f
+                        targetX=0f
                     }
                 }
                 if (targetAlpha == -1f) return@collect
                 if (fab.alpha == targetAlpha) return@collect
-                animator = ObjectAnimator.ofFloat(fab, View.ALPHA, fab.alpha, targetAlpha)
-
-                animator.run {
+                val alphaChanger = ObjectAnimator.ofFloat(fab, View.ALPHA, fab.alpha, targetAlpha)
+                val mover=ObjectAnimator.ofFloat(fab,View.TRANSLATION_X,fab.translationX,targetX)
+                val set=AnimatorSet().apply {
                     fab.isClickable = false
+                    playTogether(mover,alphaChanger)
                     duration = 500
                     interpolator = DecelerateInterpolator()
-                    start()
-                    awaitEnd()
-                    fab.isClickable =( fab.alpha==1f)
                 }
+                set.start()
+                set.awaitEnd()
+                fab.isClickable =( fab.alpha==1f)
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("","pausefuck")
     }
 
     override fun registerToolbarWithNavigation(toolbar: Toolbar) {
@@ -215,6 +242,81 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
     override fun receiveState(state: ScrollDirection) {
         viewModle.scrollChannel.offer(state)
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*i hate it */
+    private fun animateSunMoon() {
+        lifecycleScope.launchWhenResumed {
+            viewModle.animationFlow.collect{
+                /* animationTarget= AppCompatImageView(this@MainActivity)
+                 when(it){
+                     AnimationState.SunAnimation -> {animationTarget.setImageResource(R.drawable.ic_wb_sunny_black_24dp)}
+                     AnimationState.MoonAnimation -> {animationTarget.setImageResource(R.drawable.ic_brightness_3_black_24dp)}
+                 }
+                 animationTarget.layoutParams=FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT)
+                 animationTarget.alpha=0f
+                 val targetW=animationTarget.width.toFloat()
+                 val targetH=animationTarget.height.toFloat()
+                 animationTarget.setColorFilter(getColorFromAttr(R.attr.colorPrimary))
+                 animationTarget.translationX=ScreenUtils.getAppScreenWidth()/2.toFloat()
+                 animationTarget.translationY=ScreenUtils.getAppScreenHeight()/2.toFloat()
+                 frameLayout.removeView(animationTarget)
+                 frameLayout.addView(animationTarget)
+
+                 val alphaAnimator=ObjectAnimator.ofFloat(animationTarget,View.ALPHA,animationTarget.alpha,1f).apply {
+                     interpolator=AccelerateInterpolator()
+                 }
+                 val scaleXAnimator =ObjectAnimator.ofFloat(animationTarget,View.SCALE_X,animationTarget.scaleX,10f).apply {
+                     interpolator=AccelerateInterpolator()
+                 }
+                 val scaleYAnimator =ObjectAnimator.ofFloat(animationTarget,View.SCALE_Y,animationTarget.scaleY,10f).apply {
+                     interpolator=AccelerateInterpolator()
+                 }
+                 alphaAnimator.start()
+                 scaleXAnimator.start()
+                 scaleYAnimator.start()
+                 alphaAnimator.awaitEnd()
+                 scaleXAnimator.awaitEnd()
+                 scaleYAnimator.awaitEnd()
+                 frameLayout.removeView(animationTarget)*/
+
+            }
+        }
+    }
+}
+
+
+sealed class AnimationState{
+    object SunAnimation:AnimationState()
+    object MoonAnimation:AnimationState()
 }
 
 

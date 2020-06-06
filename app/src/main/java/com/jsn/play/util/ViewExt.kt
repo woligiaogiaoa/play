@@ -1,6 +1,7 @@
 package com.jsn.play.util
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.view.View
 import android.view.ViewParent
@@ -12,6 +13,10 @@ import androidx.core.os.BuildCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.jsn.play.R
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.createBalloon
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -136,4 +141,20 @@ suspend fun WebView.awaitLoading()= suspendCancellableCoroutine<Unit>{ cont ->
             }
         }
     }
+}
+
+fun getBallon(context: Context): Balloon {
+    val balloon = createBalloon(context) {
+        setArrowSize(10)
+        setWidth(100)
+        setHeight(65)
+        setArrowPosition(0.7f)
+        setCornerRadius(4f)
+        setAlpha(0.9f)
+        setText("Dark Mode")
+        setBackgroundColorResource(R.color.colorPrimary)
+        setBalloonAnimation(BalloonAnimation.FADE)
+        setLifecycleOwner(lifecycleOwner)
+    }
+    return balloon
 }

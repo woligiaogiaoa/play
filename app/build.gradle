@@ -40,6 +40,15 @@ android {
 dependencies {
 
 
+    //balloon 
+    implementation "com.github.skydoves:balloon:1.1.7"
+
+
+    /*preference*/
+    implementation Dependencies.preference
+    implementation Dependencies.preferenceKtx
+
+
     //mudules
     implementation project(":usecase-core")
 

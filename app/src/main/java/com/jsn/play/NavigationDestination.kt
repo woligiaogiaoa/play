@@ -76,7 +76,8 @@ open class ScrollStateFragment :MainNavigationFragment(){
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        scrollStateObserver=(requireActivity() as? ScrollStateObserver) ?: throw  IllegalStateException("activity must be implement ScrollStateObserver")
+        scrollStateObserver=(requireActivity() as? ScrollStateObserver)
+            ?: throw  IllegalStateException("activity must be implement ScrollStateObserver")
     }
 }
 
