@@ -52,7 +52,8 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
 
     private val TOP_LEVEL_DESTINATIONS = setOf(
         R.id.homeFragment,
-        R.id.unsplashFragment
+        R.id.unsplashFragment,
+        R.id.weatheStreamFragment
         //todo: github ,wikipadia
     )
 

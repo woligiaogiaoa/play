@@ -16,5 +16,9 @@
         android:id="@+id/unsplashFragment"
         android:name="com.jsn.play.unsplash.UnsplashFragment"
         android:label="@string/unsplash" />
+    <fragment
+        android:id="@+id/weatheStreamFragment"
+        android:name="com.jsn.play.weather.WeatheStreamFragment"
+        android:label="WeatheStreamFragment" />
 
 </navigation>

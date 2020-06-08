@@ -4,5 +4,7 @@
         android:title="@string/home"></item>
     <item android:id="@+id/unsplashFragment"
         android:title="@string/unsplash"></item>
+    <item android:id="@+id/weatheStreamFragment"
+        android:title="@string/weather"></item>
 
 </menu>

@@ -39,6 +39,9 @@ android {
 
 dependencies {
 
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
     //balloon 
     implementation "com.github.skydoves:balloon:1.1.7"
@@ -70,7 +73,7 @@ dependencies {
     //jar under libs directory
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    //androidx test
+    //androidx && test
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta6'
