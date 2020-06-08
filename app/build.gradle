@@ -39,6 +39,9 @@ android {
 
 dependencies {
 
+    //coil (a image loading lib )
+    implementation("io.coil-kt:coil:0.11.0")
+
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'

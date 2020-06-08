@@ -12,6 +12,7 @@ import com.jsn.play.NavigationDestination
 import com.jsn.play.data.Result
 import com.jsn.play.databinding.FragmentWeatherBinding
 import com.jsn.play.util.doOnApplyWindowInsets
+import com.jsn.play.util.safeRequestLayout
 import com.jsn.play.util.updatePaddingRelative
 import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.coroutines.flow.collect
@@ -31,39 +32,30 @@ class WeatheStreamFragment :MainNavigationFragment(){
         return binding.root
     }
 
-    var lastStatus:Result<Weather>?=null
+    lateinit var adapter: WeatherAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tv.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-            tv.updatePaddingRelative(top=viewPaddingState.top+windowInsetsCompat.systemWindowInsetTop)
+        status_bar_scrim.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+            status_bar_scrim.run {
+                layoutParams.height = windowInsetsCompat.systemWindowInsetTop
+                isVisible = layoutParams.height > 0
+                safeRequestLayout()
+            }
         }
-
+        rv.adapter=WeatherAdapter().also { adapter=it }
 
         lifecycleScope.launchWhenStarted {
-
             viewModel.weatheFlow.collect { currentStatus ->
-
-                tv.text=currentStatus.toString()
                 pb.isVisible=currentStatus is Result.Loading
-                tv.isVisible=!(currentStatus is Result.Loading)
-                val color=when(currentStatus){
-                    Result.Loading -> return@collect
-                    is Result.Error -> context!!.getColor(android.R.color.holo_red_dark)
-                    is Result.Success -> context!!.getColor(android.R.color.holo_blue_dark)
+                when(currentStatus){
+                    Result.Loading -> {}
+                    is Result.Error -> {}
+                    is Result.Success -> {
+                        adapter.submitList(currentStatus.data.results)
+                    }
                 }
 
-                when(lastStatus){
-                    Result.Loading -> {}
-                    is Result.Error ->{}
-                    is Result.Success -> {}
-                    null -> {}
-                }
-                val a =(tv.tag as? Int)?.equals(color)
-                a ?: tv.setTextColor(color)
-                if(a !=null && !(tv.tag as Int)!!.equals(color)) tv.setTextColor(color)
-                tv.tag=color
-                lastStatus=currentStatus
             }
         }
     }

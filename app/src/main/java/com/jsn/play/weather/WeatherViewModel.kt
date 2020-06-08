@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsn.play.data.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -22,10 +22,26 @@ class WeatherViewModel:ViewModel() {
     val weatheFlow=channel
         .asFlow()
 
+    fun fetchWeather() = flow<Result<Weather>> {
+        emit(Result.Loading)
+        emit( try {
+            Result.Success(weatherApi.getWeather())
+        }catch (e:Exception){
+            Result.Error(e)
+        })
+    }
+        .distinctUntilChanged()
+        .flowOn(Dispatchers.IO)
+
+
     init {
+        //streaming data
         viewModelScope.launch {
+            var interval=4000L
             var errorCount =0
+
             while (true){
+                channel.offer(Result.Loading)
                 channel.offer(
                     try {
                         Result.Success(weatherApi.getWeather())
@@ -36,27 +52,16 @@ class WeatherViewModel:ViewModel() {
 
                 )
                 if(errorCount>=10){ //stop streaming
-                    break
+                    interval=5000
                 }
-                delay(4_000)
-                try {
-                    channel.offer(
-                        Result.Loading
-                    )
-                }finally {
-
-                }
-
+                delay(interval)
             }
         }
-    }
-    suspend fun produce(){
-
     }
 
     override fun onCleared() {
         super.onCleared()
-        channel.cancel()
+        channel.close()
     }
 
 }
