@@ -43,20 +43,22 @@ class WeatheStreamFragment :MainNavigationFragment(){
                 safeRequestLayout()
             }
         }
-        rv.adapter=WeatherAdapter().also { adapter=it }
+        rv.adapter = WeatherAdapter().also { adapter = it }
 
         lifecycleScope.launchWhenStarted {
             viewModel.weatheFlow.collect { currentStatus ->
-                pb.isVisible=currentStatus is Result.Loading
-                when(currentStatus){
-                    Result.Loading -> {}
-                    is Result.Error -> {}
+                pb.isVisible = currentStatus is Result.Loading
+                when (currentStatus) {
+                    Result.Loading -> {
+                    }
+                    is Result.Error -> {
+                    }
                     is Result.Success -> {
                         adapter.submitList(currentStatus.data.results)
                     }
                 }
-
             }
         }
+
     }
 }

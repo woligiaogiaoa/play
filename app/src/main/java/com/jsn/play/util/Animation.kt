@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.*
 import kotlin.coroutines.resume
 
 suspend fun Animator.awaitEnd() = suspendCancellableCoroutine<Unit> { cont ->
@@ -72,3 +73,48 @@ suspend fun AnimatorSet.awaitEnd() = suspendCancellableCoroutine<Unit> { cont ->
 
     })
 }
+
+
+class Xuanke(){
+
+    val stack=Stack<Int>()
+
+   /* fun findOrder(numCourses: Int, prerequisites: Array<IntArray>): IntArray {
+        prerequisites.forEach {
+            resolveEachDependencies(it)
+        }
+    }
+
+    fun resolveEachDependencies(nodeDependencies:IntArray){
+        val depen = nodeDependencies.toList()
+        val first = depen.first()
+        depen.subList(1,depen.size).forEach{
+            resolveEachDependencies(it)
+        }
+    }*/
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

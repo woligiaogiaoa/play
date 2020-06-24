@@ -48,7 +48,7 @@ class UnsplashFragment: ScrollStateFragment(){
             binding.vStatusBar.run{
                 layoutParams.height = insets.systemWindowInsetTop
                 isVisible = layoutParams.height > 0
-                safeRequestLayout()
+                post { requestLayout() }
             }
         }
         buildWebview()

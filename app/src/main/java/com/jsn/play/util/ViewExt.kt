@@ -19,6 +19,7 @@ import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.createBalloon
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 
 @SuppressLint("NewApi") // Lint does not understand isAtLeastQ currently
@@ -156,5 +157,6 @@ fun getBallon(context: Context): Balloon {
         setBalloonAnimation(BalloonAnimation.FADE)
         setLifecycleOwner(lifecycleOwner)
     }
+    AtomicReference<Int>()
     return balloon
 }

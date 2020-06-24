@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import com.jsn.play.data.PrefManager
+import com.jsn.play.util.determineAdvertisingInfo
 
 class MApp:Application(){
 
@@ -26,6 +27,8 @@ class MApp:Application(){
 
         AppCompatDelegate.setDefaultNightMode(
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+        determineAdvertisingInfo()
     }
 }
 
