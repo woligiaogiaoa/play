@@ -6,7 +6,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import com.jsn.play.data.PrefManager
 import com.jsn.play.util.determineAdvertisingInfo
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class MApp:Application(){
 
     companion object{

@@ -42,5 +42,4 @@ abstract class NoResultUseCase<in T>{
     }
 
     abstract suspend fun run(params: T)
-
 }

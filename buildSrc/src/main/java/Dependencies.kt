@@ -30,3 +30,4 @@ object Dependencies {
 
     val kotlinCoroutineAndroid="org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinCoroutineAndroidVersion}"
 }
+

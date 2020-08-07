@@ -1,6 +1,5 @@
-package com.jsn.play.home
+package com.jsn.play
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -8,16 +7,12 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.updatePadding
@@ -27,10 +22,9 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.jsn.play.*
-import com.jsn.play.data.PrefManager
+import com.jsn.play.home.MainViewModle
+import com.jsn.play.home.ScrollDirection
 import com.jsn.play.util.*
-import com.skydoves.balloon.showAlignTop
 import com.skydoves.balloon.showBalloon
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.channels.sendBlocking
@@ -316,8 +310,8 @@ class MainActivity : AppCompatActivity(), NavigationHost,ScrollStateObserver {
 
 
 sealed class AnimationState{
-    object SunAnimation:AnimationState()
-    object MoonAnimation:AnimationState()
+    object SunAnimation: AnimationState()
+    object MoonAnimation: AnimationState()
 }
 
 

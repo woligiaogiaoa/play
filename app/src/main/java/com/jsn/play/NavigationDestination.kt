@@ -13,7 +13,6 @@ interface NavigationDestination {
     /** Called by the host when the user interacts with it. */
     fun onUserInteraction() {}
 }
-
 /**
  * Fragment representing a main navigation destination. This class handles wiring up the [Toolbar]
  * navigation icon if the fragment is attached to a [NavigationHost].
@@ -53,21 +52,9 @@ interface NavigationHost {
     /** Called by MainNavigationFragment to setup it's toolbar with the navigation controller. */
     fun registerToolbarWithNavigation(toolbar: Toolbar) }
 
-
-
-
-
-
-
-
-
-
-
-
 interface ScrollStateObserver {
     fun receiveState(state: ScrollDirection)
 }
-
 
 open class ScrollStateFragment :MainNavigationFragment(){
 

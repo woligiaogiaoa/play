@@ -1,11 +1,10 @@
 package com.jsn.play.home
 
 import androidx.lifecycle.ViewModel
+import com.jsn.play.AnimationState
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 
 
 sealed class ScrollDirection(){

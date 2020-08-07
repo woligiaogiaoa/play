@@ -13,15 +13,11 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import com.jsn.play.MainNavigationFragment
 import com.jsn.play.ScrollStateFragment
 import com.jsn.play.databinding.FragmentUnsplashBinding
-import com.jsn.play.home.MainActivity
 import com.jsn.play.home.ScrollDirection
 import com.jsn.play.util.doOnApplyWindowInsets
-import com.jsn.play.util.safeRequestLayout
 import kotlinx.android.synthetic.main.fragment_unsplash.*
-import java.lang.RuntimeException
 
 class UnsplashFragment: ScrollStateFragment(){
 
